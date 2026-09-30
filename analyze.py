@@ -30,7 +30,7 @@ def load_matrix(data_dir: Path = DATA, limit: int | None = None, days: int | Non
 
     data_dir 可指向 monkey_market/data（随机数据）或 ~/Documents/mainland_data_2014（真实数据）。
     """
-    files = sorted(data_dir.glob("*.csv"))
+    files = sorted(p for p in data_dir.glob("*.csv") if p.name != "sources.csv")
     names, arrs = [], []
     for f in files:
         if limit is not None and len(arrs) >= limit:
@@ -65,7 +65,7 @@ def load_matrix_old():
 
 def market_mean(data_dir: Path, days: int, limit: int | None = None):
     """全市场每日未来 5/20 日收益均值（横截面），用于市场中性化。"""
-    files = sorted(data_dir.glob("*.csv"))
+    files = sorted(p for p in data_dir.glob("*.csv") if p.name != "sources.csv")
     s5 = np.zeros(days); n5 = np.zeros(days)
     s20 = np.zeros(days); n20 = np.zeros(days)
     used = 0

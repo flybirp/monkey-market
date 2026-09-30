@@ -1,0 +1,18 @@
+{
+  "sigma": 3.2451,
+  "skew": -0.007,
+  "excess_kurtosis": 2.353,
+  "gap_ratio_pct": 78.37,
+  "gap_abs_mean_pct": 0.7767,
+  "gap_abs_median_pct": 0.3891,
+  "gap_abs_p95_pct": 2.7933,
+  "vol_cluster_absr_lag1": 0.3212,
+  "return_lag1": 0.1064,
+  "near_limit_pct": 3.963,
+  "ohlc_violations": 0,
+  "n_days": 999999,
+  "L": 60,
+  "n_stocks": 1001,
+  "extreme_filter": 0.15,
+  "seed": 20140102
+}
