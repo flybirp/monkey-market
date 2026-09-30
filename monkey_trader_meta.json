@@ -1,13 +1,14 @@
 {
-  "runs": 1000,
+  "runs": 1600,
   "fee": 0.0,
   "seed": 20260930,
   "days": 1000,
-  "mean_monkey": 0.0797063240639279,
-  "mean_buyhold": 0.15377547831771332,
-  "sharpe_like_monkey": 0.17286640178349835,
-  "sharpe_like_buyhold": 0.22391081066210478,
-  "god_ratio": 0.046,
-  "exposure": 0.49891991991991996,
-  "trades": 332.851
+  "mean_monkey": 0.38108357337685483,
+  "mean_buyhold": 0.5663562934361418,
+  "sharpe_like_monkey": 0.43804972230746775,
+  "sharpe_like_buyhold": 0.5400277417746139,
+  "god_ratio": 0.170625,
+  "exposure": 0.4987844094094094,
+  "trades": 332.661875,
+  "data_source": "real"
 }

@@ -29,16 +29,26 @@ HERE = Path(__file__).parent
 DATA = HERE / "data"
 
 
-def load_close(limit: int | None = None) -> tuple[list[str], np.ndarray]:
-    """返回 (names, close 矩阵 (S, D))。"""
-    files = sorted(DATA.glob("fake*.csv"), key=lambda p: int(p.stem[4:]))
-    if limit:
-        files = files[:limit]
-    first = pd.read_csv(files[0], usecols=["close"]).to_numpy().ravel()
-    c = np.empty((len(files), len(first)))
-    for j, f in enumerate(files):
-        c[j] = pd.read_csv(f, usecols=["close"]).to_numpy().ravel()
-    return [f.stem for f in files], c
+def load_close(data_dir: Path = DATA, limit: int | None = None, days: int | None = None,
+               start: str = "2014-01-02") -> tuple[list[str], np.ndarray]:
+    """返回 (names, close 矩阵 (S, D))。默认读随机数据，也可指向真实 A 股日线目录。"""
+    if data_dir == DATA:
+        files = sorted(DATA.glob("fake*.csv"), key=lambda p: int(p.stem[4:]))
+        if limit:
+            files = files[:limit]
+        cols = [pd.read_csv(f, usecols=["close"]).to_numpy().ravel() for f in files]
+        return [f.stem for f in files], np.array(cols)
+
+    names, cols = [], []
+    for f in sorted(data_dir.glob("*.csv")):           # 真实数据：按文件名字母序
+        if limit and len(cols) >= limit:
+            break
+        a = pd.read_csv(f, usecols=["date", "close"], nrows=days or 10 ** 6)
+        if days and (len(a) < days or str(a["date"].iloc[0])[:10] != start):
+            continue                                    # 剔除起点不对 / 天数不足的
+        cols.append(a["close"].to_numpy(float))
+        names.append(f.stem)
+    return names, np.array(cols)
 
 
 def simulate(c: np.ndarray, fee: float = 0.0, seed: int = 20260930) -> pd.DataFrame:
@@ -99,17 +109,22 @@ def describe(x: np.ndarray, name: str) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=1000, help="跑多少只股票（= 多少次独立实验）")
+    ap.add_argument("--data", type=str, default=str(DATA), help="数据目录，默认随机数据；也可指向真实 A 股日线目录")
+    ap.add_argument("--days", type=int, default=None, help="每只取多少天（真实数据用 1000）")
+    ap.add_argument("--tag", type=str, default="", help="输出文件后缀")
     ap.add_argument("--fee", type=float, default=0.0, help="单边交易费率，如 0.002 = 千二")
     ap.add_argument("--seed", type=int, default=20260930)
     ap.add_argument("--no-plot", action="store_true")
     a = ap.parse_args()
 
-    names, c = load_close(a.runs)
+    names, c = load_close(Path(a.data).expanduser(), a.runs, a.days)
+    real = Path(a.data).expanduser() != DATA
     df = simulate(c, fee=a.fee, seed=a.seed)
     df.insert(0, "stock", names)
-    df.to_csv(HERE / "monkey_trader_runs.csv", index=False)
+    df.to_csv(HERE / f"monkey_trader_runs{a.tag}.csv", index=False)
 
-    print(f"=== 猴子交易员 vs 买入持有｜{len(df)} 次独立实验｜费率 {a.fee:.3%} ===")
+    print(f"=== 猴子交易员 vs 买入持有｜{len(df)} 次独立实验｜费率 {a.fee:.3%}｜数据源: "
+          f"{'真实 A 股 ' + a.data if real else '纯随机 fake 个股'} ===")
     stat = pd.DataFrame([describe(df.monkey_ret, "🐒 随机买卖"), describe(df.buyhold_ret, "🛒 买入持有")])
     pd.set_option("display.width", 240)
     pd.set_option("display.max_columns", 40)
@@ -138,14 +153,16 @@ def main():
          "mean_monkey": float(df.monkey_ret.mean()), "mean_buyhold": float(df.buyhold_ret.mean()),
          "sharpe_like_monkey": float(df.monkey_ret.mean() / df.monkey_ret.std(ddof=1)),
          "sharpe_like_buyhold": float(df.buyhold_ret.mean() / df.buyhold_ret.std(ddof=1)),
-         "god_ratio": god, "exposure": float(df.exposure.mean()), "trades": float(df.trades.mean())},
+         "god_ratio": god, "exposure": float(df.exposure.mean()), "trades": float(df.trades.mean()),
+         "data_source": "real" if real else "fake"},
         ensure_ascii=False, indent=2))
 
     if not a.no_plot:
         import plot_trader
-        plot_trader.main(df, fee=a.fee, fee_mean=fee_mean)
-    print(f"\n明细: {HERE / 'monkey_trader_runs.csv'}")
-    print(f"图: {HERE / 'monkey_trader.png'}")
+        plot_trader.main(df, fee=a.fee, fee_mean=fee_mean, tag=a.tag,
+                         src="真实 A 股" if real else "纯随机 fake 个股")
+    print(f"\n明细: {HERE / f'monkey_trader_runs{a.tag}.csv'}")
+    print(f"图: {HERE / f'monkey_trader{a.tag}.png'}")
 
 
 if __name__ == "__main__":

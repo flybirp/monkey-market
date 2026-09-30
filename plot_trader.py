@@ -68,7 +68,8 @@ def _qq(ax, series: dict):
     ax.grid(alpha=0.12)
 
 
-def main(df: pd.DataFrame, fee: float = 0.0, fee_mean: float | None = None):
+def main(df: pd.DataFrame, fee: float = 0.0, fee_mean: float | None = None,
+         tag: str = "", src: str = "纯随机 fake 个股"):
     m = df.monkey_ret.to_numpy(float)
     b = df.buyhold_ret.to_numpy(float)
     fig, axes = plt.subplots(1, 3, figsize=(18, 5.6))
@@ -94,7 +95,7 @@ def main(df: pd.DataFrame, fee: float = 0.0, fee_mean: float | None = None):
              f"   收益/波动比 {mu_m / sd_m:.3f} vs {mu_b / sd_b:.3f} —— 只是把两条尾巴一起削掉，并没有变好",
              ha="center", fontsize=9.5, color="#9aa0a6")
     fig.tight_layout(rect=(0, 0.045, 1, 0.94))
-    out = HERE / "monkey_trader.png"
+    out = HERE / f"monkey_trader{tag}.png"
     fig.savefig(out, dpi=130)
     print("saved ->", out)
 
