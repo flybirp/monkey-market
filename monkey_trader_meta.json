@@ -1,0 +1,13 @@
+{
+  "runs": 1000,
+  "fee": 0.0,
+  "seed": 20260930,
+  "days": 1000,
+  "mean_monkey": 0.0797063240639279,
+  "mean_buyhold": 0.15377547831771332,
+  "sharpe_like_monkey": 0.17286640178349835,
+  "sharpe_like_buyhold": 0.22391081066210478,
+  "god_ratio": 0.046,
+  "exposure": 0.49891991991991996,
+  "trades": 332.851
+}
