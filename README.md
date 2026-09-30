@@ -123,16 +123,19 @@
 ## 7. 复现
 
 ```bash
-PY=/Users/flybirp/.workbuddy/binaries/python/envs/default/bin/python
+pip install numpy pandas matplotlib
 
-$PY gen_calendar.py 1000                    # 从真实数据抽 1000 个交易日
-$PY generate_monkeys.py                     # 生成 fake0~fake1000（约 9 秒）
-$PY analyze.py                              # 随机数据体检 + 形态检验
-$PY analyze.py --data ~/Documents/mainland_data_2014 --limit 1600 --days 1000 --tag _real
-$PY analyze.py --data ~/Documents/mainland_data_2014 --limit 1600 --days 1000 --demean --tag _real_neutral
-$PY segment_check.py 4                      # 分段稳健性
-$PY plot_report.py && $PY plot_segments.py  # 出图
+python3 gen_calendar.py 1000                    # 从真实数据抽 1000 个交易日
+python3 generate_monkeys.py                     # 生成 fake0~fake1000（约 9 秒）
+python3 analyze.py                              # 随机数据体检 + 形态检验
+python3 analyze.py --data ~/Documents/mainland_data_2014 --limit 1600 --days 1000 --tag _real
+python3 analyze.py --data ~/Documents/mainland_data_2014 --limit 1600 --days 1000 --demean --tag _real_neutral
+python3 segment_check.py 4                      # 分段稳健性
+python3 plot_report.py && python3 plot_segments.py   # 出图
 ```
+
+`--data` 指向任意 A 股日线目录即可（要求 `date,open,close,high,low` 列、每只股票一个 csv）；
+`gen_calendar.py` 默认从 `~/Documents/mainland_data_2014` 取日期，换源改脚本顶部 `SRC` 一行即可。全量跑约 1 分钟。
 
 换参数重造一批不同脾气的大盘：`generate_monkeys.py --stocks 200 --sigma 0.006 --jitter 1.5`
 
