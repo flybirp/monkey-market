@@ -1,0 +1,18 @@
+{
+  "days": 1000,
+  "stocks": 1001,
+  "steps": 32,
+  "sigma": 0.003,
+  "jitter": 0.6,
+  "s0": 10.0,
+  "seed0": 20140102,
+  "decimals": 2,
+  "out": "data",
+  "daily_sigma_approx": 1.796,
+  "date_range": [
+    "2014-01-02",
+    "2018-02-01"
+  ],
+  "generated_at": "2026-09-30 13:09:24",
+  "coin_flips_total": 32032000
+}
